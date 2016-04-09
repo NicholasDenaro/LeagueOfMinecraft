@@ -5,11 +5,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class LeagueOfMinecraft extends JavaPlugin
 {
+	public static LeagueOfMinecraft instance;
 	@Override
 	public void onEnable()
 	{
 		loadHandlers();
 		getServer().broadcastMessage(ChatColor.GREEN + "LeagueOfMinecraft enabled!");
+		instance = this;
 	}
 	
 	private void loadHandlers()
