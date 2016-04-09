@@ -15,7 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LeagueOfMinecraft extends JavaPlugin
 {
 	public static LeagueOfMinecraft instance;
-	public static final int TICKS = 20;
+	public static final int TPS = 20;
+	public CrowdControl cc;
 	
 	@Override
 	public void onEnable()
@@ -26,6 +27,7 @@ public class LeagueOfMinecraft extends JavaPlugin
 		loadCommands();
 		getServer().broadcastMessage(ChatColor.GREEN + "LeagueOfMinecraft enabled!");
 		instance = this;
+		cc = new CrowdControl();
 	}
 	
 	private void loadHandlers()
@@ -69,6 +71,7 @@ public class LeagueOfMinecraft extends JavaPlugin
 		CommandEvents commander = new CommandEvents();
 		
 		getCommand("create-turret").setExecutor(commander);
+		getCommand("slow").setExecutor(commander);
 	}
 	
 	public void addHandler( Listener listener )

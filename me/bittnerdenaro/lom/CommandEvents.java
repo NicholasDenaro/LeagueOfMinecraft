@@ -20,8 +20,18 @@ public class CommandEvents implements CommandExecutor
 			{
 				Turret.instance.createTurret(player.getLocation());
 			}
+			if("slow".equals(command.getName()))
+			{
+				if(args.length != 2)
+				{
+					return false;
+				}
+				double percent = new Double(args[0]);
+				int duration = new Integer(args[1]);
+				LeagueOfMinecraft.instance.cc.slow(player,percent,duration);
+			}
 		}
-		return false;
+		return true;
 	}
 	
 }

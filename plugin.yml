@@ -5,3 +5,6 @@ commands:
   create-turret:
     description: creates a turret
     usage: /create-turret
+  slow:
+    descript: causes the slow CC
+    usage: /slow <percent> <duration in ticks>
