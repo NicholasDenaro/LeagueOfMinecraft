@@ -1,5 +1,10 @@
 package me.bittnerdenaro.lom;
 
+import me.bittnerdenaro.lom.champions.Champion;
+import me.bittnerdenaro.lom.champions.TestChampion;
+
+import java.util.HashMap;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -7,13 +12,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class GeneralPlayerEvents implements Listener
 {
-	public int movespeed = 1;
+	/*rip
+	public double movespeed = .5;
+	private HashMap<Player, BukkitRunnable> movementHashMap = new HashMap<Player, BukkitRunnable>();
 	
 	//let player move to block by right clicking it
 	@EventHandler
@@ -33,7 +41,12 @@ public class GeneralPlayerEvents implements Listener
 			//make sure block is ground (one below player)
 			if( playerLocation.getY() - blockLocation.getY() == 1 )
 			{
-				new BukkitRunnable()
+				//check if previous move command issued, if so cancel
+				BukkitRunnable movementBR = movementHashMap.remove( player );
+				if( movementBR != null )
+					movementBR.cancel();
+				
+				BukkitRunnable newBR = new BukkitRunnable()
 				{
 					@Override
 					public void run()
@@ -42,17 +55,28 @@ public class GeneralPlayerEvents implements Listener
 						if( difference > 1 )
 						{
 							Location relativeLocation = blockLocation.clone().subtract( playerLocation );
-							event.getPlayer().setVelocity( new Vector(relativeLocation.getX()*movespeed, 0, relativeLocation.getZ()*movespeed).normalize() );	
-						
+							event.getPlayer().setVelocity( new Vector(relativeLocation.getX(), 0, relativeLocation.getZ()).normalize().multiply(movespeed) );	
+							
 						}
 						else
 						{
+							movementHashMap.remove(player);
 							this.cancel();
 						}
 					}
-				}.runTaskTimer(LeagueOfMinecraft.instance, 0, 1);
+				};
+				
+				movementHashMap.put(player, newBR );
+
+				newBR.runTaskTimer(LeagueOfMinecraft.instance, 1, 1);
 				
 			}
 		}
+	}*/
+	
+	@EventHandler
+	public void onPlayerJoin( PlayerJoinEvent event )
+	{
+		Champion ts = new TestChampion(event.getPlayer());
 	}
 }
