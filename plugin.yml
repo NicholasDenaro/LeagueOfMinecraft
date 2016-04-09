@@ -1,3 +1,7 @@
 name: LeagueOfMinecraft
 main: me.bittnerdenaro.lom.LeagueOfMinecraft
 version: 1.0
+commands:
+  create-turret:
+    description: creates a turret
+    usage: /create-turret
