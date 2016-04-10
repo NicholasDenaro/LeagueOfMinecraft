@@ -189,6 +189,8 @@ public abstract class Champion implements Skillable, Listener, Healthable
 	{
 		boolean wasAtFull = statMap.get("health").value == statMap.get("maxHealth").value;
 		Stat health = statMap.get("health");
+		if(health.value <= 0)
+			return;
 		health.value -= ammount;
 		if(health.value <= 0)
 		{
@@ -386,8 +388,7 @@ public abstract class Champion implements Skillable, Listener, Healthable
 			public void run()
 			{
 				playa.teleport(spawn);
-				cancel();
 			}
-		}.runTaskTimer(LeagueOfMinecraft.instance,LeagueOfMinecraft.instance.TPS*time,1);
+		}.runTaskLater(LeagueOfMinecraft.instance, LeagueOfMinecraft.instance.TPS*time);
 	}
 }

@@ -1,9 +1,12 @@
 package me.bittnerdenaro.lom;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import me.bittnerdenaro.lom.LeagueOfMinecraft.Team;
+import me.bittnerdenaro.lom.entity.Turret;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -45,6 +48,27 @@ public class Map
 		if(section.contains("BLUE.spawn"))
 		{
 			blueSpawn = (Location)section.get("BLUE.spawn");
+		}
+		if(section.contains("RED.turrets"))
+		{
+			Set<String> keys = section.getConfigurationSection("RED.turrets").getKeys(false);
+			LeagueOfMinecraft.instance.getServer().broadcastMessage("number of keys: "+keys.size());
+			for(String key : keys)
+			{
+				LeagueOfMinecraft.instance.getServer().broadcastMessage(ChatColor.GOLD + "key: " + key);
+				Location loc = (Location)section.get("RED.turrets." + key);
+				LeagueOfMinecraft.instance.getServer().broadcastMessage(ChatColor.RED + "-turret: " + loc);
+				Turret.createTurret(loc,Team.RED);
+			}
+		}
+		if(section.contains("BLUE.turrets"))
+		{
+			Set<String> keys = section.getConfigurationSection("BLUE.turrets").getKeys(false);
+			for(String key : keys)
+			{
+				Location loc = (Location)section.get("BLUE.turrets." + key);
+				Turret.createTurret(loc,Team.BLUE);
+			}
 		}
 	}
 	

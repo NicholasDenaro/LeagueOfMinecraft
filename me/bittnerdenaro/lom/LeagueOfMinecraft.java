@@ -43,6 +43,11 @@ public class LeagueOfMinecraft extends JavaPlugin
 	@Override
 	public void onEnable()
 	{
+		instance = this;
+		playersChamp = new HashMap<Player, Champion>();
+		minions = new HashMap<LivingEntity, Minion>();
+		turrets = new HashMap<LivingEntity, Turret>();
+		healthables = new HashMap<LivingEntity, Healthable>();
 		loadHandlers();
 		createConfig();
 		loadConfig();
@@ -52,11 +57,6 @@ public class LeagueOfMinecraft extends JavaPlugin
 		waves.push(new Integer[]{3,3,0});
 		waves.push(new Integer[]{3,3,0});
 		getServer().broadcastMessage(ChatColor.GREEN + "LeagueOfMinecraft enabled!");
-		instance = this;
-		playersChamp = new HashMap<Player, Champion>();
-		minions = new HashMap<LivingEntity, Minion>();
-		turrets = new HashMap<LivingEntity, Turret>();
-		healthables = new HashMap<LivingEntity, Healthable>();
 	}
 	
 	private void loadHandlers()

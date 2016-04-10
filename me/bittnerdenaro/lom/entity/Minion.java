@@ -88,7 +88,7 @@ public abstract class Minion implements Skillable, Healthable
 				else
 				{
 					List<Entity> entities = me.getNearbyEntities(range * 2,range * 2,range * 2);
-					double distance = range + 1;
+					double distance = range;
 					LivingEntity closest = null;
 					for(Entity entity : entities)
 					{
@@ -172,7 +172,7 @@ public abstract class Minion implements Skillable, Healthable
 			@Override
 			public int getRange()
 			{
-				return 4;
+				return 2;
 			}
 
 			@Override
@@ -195,7 +195,7 @@ public abstract class Minion implements Skillable, Healthable
 			@Override
 			public int getRange()
 			{
-				return 7;
+				return 4;
 			}
 
 			@Override
@@ -218,7 +218,7 @@ public abstract class Minion implements Skillable, Healthable
 			@Override
 			public int getRange()
 			{
-				return 7;
+				return 6;
 			}
 
 			@Override

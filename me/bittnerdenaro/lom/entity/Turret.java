@@ -6,6 +6,7 @@ import me.bittnerdenaro.lom.BDProjectile;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
 import me.bittnerdenaro.lom.LeagueOfMinecraft.Team;
 import me.bittnerdenaro.lom.skills.TestSkill1;
+import me.bittnerdenaro.lom.skills.TurretAttack;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -14,13 +15,14 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowman;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class Turret implements Skillable, Healthable
+public class Turret implements Skillable, Healthable, Listener
 {
 	public static Turret instance;
-	public static final int TURRET_RADIUS = 20;
+	public static final int TURRET_RADIUS = 5;
 	public double health;
 	public double maxHealth;
 	
@@ -38,13 +40,14 @@ public class Turret implements Skillable, Healthable
 		LeagueOfMinecraft.instance.healthables.put(entity, this);
 	}
 	
-	public void createTurret(Location location, Team team)
+	public static void createTurret(Location location, Team team)
 	{
 		World world = LeagueOfMinecraft.instance.getWorld();
 		Snowman turret = (Snowman)world.spawnEntity(location, EntityType.SNOWMAN);
 		turret.setAI(false);
 		turret.setInvulnerable(true);
 		
+		Location anchor = location.clone();
 		Turret thisTurret = new Turret(turret, team, 1500);
 		
 		BukkitRunnable runnable = new BukkitRunnable()
@@ -55,11 +58,13 @@ public class Turret implements Skillable, Healthable
 			@Override
 			public void run()
 			{
-				if(turret.isDead())
+				if(turret.isDead() || thisTurret.isDead())
 				{
+					thisTurret.me.remove();
 					cancel();
 					return;
 				}
+				turret.teleport(anchor);
 				LivingEntity target = turret.getTarget();
 				if(target != null)
 				{
@@ -67,11 +72,11 @@ public class Turret implements Skillable, Healthable
 					{
 						timer = repeat;
 						//shoot again
-						if(canStillShoot(turret,target))
+						if(canStillShoot(turret,target) && !target.isDead() && !LeagueOfMinecraft.instance.healthables.get(target).isDead())
 						{
 							Vector dir = target.getEyeLocation().clone().subtract(turret.getEyeLocation()).toVector().normalize();
 							Projectile proj = (Projectile)LeagueOfMinecraft.instance.getWorld().spawnEntity(turret.getEyeLocation().clone().add(dir.multiply(2)),EntityType.SHULKER_BULLET);
-							new BDProjectile(thisTurret, proj, 0.3, target, new TestSkill1());
+							new BDProjectile(thisTurret, proj, 0.3, target, new TurretAttack());
 						}
 						else
 						{
@@ -87,7 +92,9 @@ public class Turret implements Skillable, Healthable
 					double distance = TURRET_RADIUS;
 					for(Entity entity : entities)
 					{
-						if(entity instanceof LivingEntity && !LeagueOfMinecraft.instance.sameTeam(entity, turret))
+						if(entity instanceof LivingEntity 
+								&& LeagueOfMinecraft.instance.healthables.containsKey(entity)
+								&& !LeagueOfMinecraft.instance.sameTeam(entity, turret))
 						{
 							double dist = turret.getLocation().distance(entity.getLocation());
 							if(dist < distance)
@@ -109,7 +116,7 @@ public class Turret implements Skillable, Healthable
 		runnable.runTaskTimer(LeagueOfMinecraft.instance, 1, 1);
 	}
 	
-	private boolean canStillShoot(Snowman turret, LivingEntity entity)
+	private static boolean canStillShoot(Snowman turret, LivingEntity entity)
 	{
 		return turret.getLocation().distance(entity.getLocation()) < TURRET_RADIUS;
 	}
