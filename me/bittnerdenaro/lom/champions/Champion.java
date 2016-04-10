@@ -69,7 +69,7 @@ public abstract class Champion implements Listener{
 		this.name = name;
 		
 		//init scoreboard
-		this.board = createScoreBoard();
+		this.board = createScoreBoard( health );
 		Objective sideObjective = board.getObjective("Side");
 		Objective nameObjective = board.getObjective("Name");
 		
@@ -90,7 +90,7 @@ public abstract class Champion implements Listener{
 		statMap.put("abilityPower", new Stat( (double) 0, sideObjective.getScore("Ability Power:"), 6 )) ;
 		statMap.put("armorPenetration", new Stat( (double) 0, sideObjective.getScore("Armor Penetration:"), 0 ));
 		statMap.put("magicPenetration", new Stat( (double) 0, sideObjective.getScore("Magic Penetration:"), 0 )) ;
-		statMap.put("cooldownReduction", new Stat( (double) 0, sideObjective.getScore("Cooldown Reduction:"), 1 ));
+		statMap.put("cooldownReduction", new Stat( (double) 0, sideObjective.getScore("Cooldown Reduction:"), 0 ));
 		statMap.put("critChance", new Stat( (double) 0, sideObjective.getScore("Critical Chance:"), 0 )) ;
 		statMap.put("spellVamp", new Stat( (double) 0, sideObjective.getScore("Spell Vampirism:"), 0 ));
 		statMap.put("lifeSteal", new Stat( (double) 0, sideObjective.getScore("Life Steal:"), 0 )) ;
@@ -116,15 +116,16 @@ public abstract class Champion implements Listener{
 		
 		for( Stat s: statMap.values())
 		{
-			if( s.order > 0 )
+			if( s.order > 0 || s.order < 0 )
 			{
 				s.update(this.board, sideObjective);
 			}
-			else if( s.order < 0 )
+			/*else if( s.order < 0 )
 			{
 				s.update(this.board, nameObjective);
-			}
+			}*/
 		}
+		statMap.get("health").update(this.board, nameObjective);
 		
 		this.player.setLevel(1);
 		
@@ -170,7 +171,7 @@ public abstract class Champion implements Listener{
         return is;
     }
 
-	private Scoreboard createScoreBoard() 
+	private Scoreboard createScoreBoard( double maxHealth ) 
 	{
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 		Scoreboard board = manager.getNewScoreboard();
@@ -181,7 +182,7 @@ public abstract class Champion implements Listener{
 		
 		Objective nameObjective = board.registerNewObjective("Name", "dummy");
 		nameObjective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-		nameObjective.setDisplayName("stuff");	
+		nameObjective.setDisplayName("/ " + maxHealth);	
 		
 		return board;
 	}
