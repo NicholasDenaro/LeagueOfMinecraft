@@ -38,7 +38,7 @@ import org.bukkit.util.Vector;
 
 public abstract class Champion implements Listener{
 	
-	HashMap<String, Stat> statMap;
+	public HashMap<String, Stat> statMap;
 	
 	//player info
 	public Player player;
@@ -125,10 +125,8 @@ public abstract class Champion implements Listener{
 				s.update(this.board, nameObjective);
 			}*/
 		}
-		Score namescore = nameObjective.getScore( "Gambit5");
-		namescore.setScore( (int)statMap.get("health").value );
-		
-		this.player.sendMessage(""+ statMap.get("health").value);
+		//Score namescore = nameObjective.getScore( "Gambit5");
+		//namescore.setScore( (int)statMap.get("health").value );
 		
 		this.player.setLevel(1);
 		
@@ -143,6 +141,7 @@ public abstract class Champion implements Listener{
 		
 		
 		LeagueOfMinecraft.instance.addHandler(this);
+		LeagueOfMinecraft.instance.playersChamp.put(this.player,this);
 	}
 	
 	private void initSpells() {

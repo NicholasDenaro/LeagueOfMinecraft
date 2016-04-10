@@ -1,14 +1,15 @@
 package me.bittnerdenaro.lom.entity;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import me.bittnerdenaro.lom.BDProjectile;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
+import me.bittnerdenaro.lom.LeagueOfMinecraft.Team;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -22,7 +23,7 @@ public class Turret implements Listener
 {
 	public static Turret instance;
 	public static final int TURRET_RADIUS = 20;
-	private HashSet<Entity> turrets = new HashSet<Entity>();
+	public HashMap<Entity, Team> turrets = new HashMap<Entity, Team>();
 	
 	public Turret()
 	{
@@ -30,13 +31,13 @@ public class Turret implements Listener
 		instance = this;
 	}
 	
-	public void createTurret(Location location)
+	public void createTurret(Location location, Team team)
 	{
 		World world = LeagueOfMinecraft.instance.getWorld();
 		Snowman turret = (Snowman)world.spawnEntity(location, EntityType.SNOWMAN);
 		turret.setAI(false);
 		turret.setInvulnerable(true);
-		turrets.add(turret);
+		turrets.put(turret, team);
 		
 		BukkitRunnable runnable = new BukkitRunnable()
 		{
@@ -85,7 +86,7 @@ public class Turret implements Listener
 					double distance = TURRET_RADIUS;
 					for(Entity entity : entities)
 					{
-						if(entity instanceof LivingEntity)
+						if(entity instanceof LivingEntity && !LeagueOfMinecraft.instance.sameTeam(entity, turret))
 						{
 							double dist = turret.getLocation().distance(entity.getLocation());
 							if(dist < distance)

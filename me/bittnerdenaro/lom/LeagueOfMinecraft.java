@@ -1,16 +1,30 @@
 package me.bittnerdenaro.lom;
 
 import java.io.File;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
+import me.bittnerdenaro.lom.champions.Champion;
+import me.bittnerdenaro.lom.entity.Minion;
 import me.bittnerdenaro.lom.entity.Turret;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.MagmaCube;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.Listener;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class LeagueOfMinecraft extends JavaPlugin
 {
@@ -18,6 +32,10 @@ public class LeagueOfMinecraft extends JavaPlugin
 	public static enum Team{RED, BLUE};
 	public static final int TPS = 20;
 	public CrowdControl cc;
+	public Map map;
+	public HashMap<Player, Champion> playersChamp;
+	public HashMap<LivingEntity, Minion> minions;
+	public LinkedList<Integer[]> waves;
 	
 	@Override
 	public void onEnable()
@@ -26,8 +44,14 @@ public class LeagueOfMinecraft extends JavaPlugin
 		createConfig();
 		loadConfig();
 		loadCommands();
+		waves = new LinkedList<Integer[]>();
+		waves.push(new Integer[]{3,3,1});
+		waves.push(new Integer[]{3,3,0});
+		waves.push(new Integer[]{3,3,0});
 		getServer().broadcastMessage(ChatColor.GREEN + "LeagueOfMinecraft enabled!");
 		instance = this;
+		playersChamp = new HashMap<Player, Champion>();
+		minions = new HashMap<LivingEntity, Minion>();
 	}
 	
 	private void loadHandlers()
@@ -37,6 +61,40 @@ public class LeagueOfMinecraft extends JavaPlugin
 		cc = new CrowdControl();
 		this.getServer().getPluginManager().registerEvents(cc, this);
 
+	}
+	
+	public boolean sameTeam(Entity entity, Entity other)
+	{
+		Team team1 = null;
+		Team team2 = null;
+		if(playersChamp.containsKey(entity))
+		{
+			team1 = playersChamp.get(entity).team;
+		}
+		if(playersChamp.containsKey(other))
+		{
+			team2 = playersChamp.get(other).team;
+		}
+		
+		if(minions.containsKey(entity))
+		{
+			team1 = minions.get(entity).team;
+		}
+		if(minions.containsKey(other))
+		{
+			team2 = minions.get(other).team;
+		}
+		
+		if(Turret.instance.turrets.containsKey(entity))
+		{
+			team1 = Turret.instance.turrets.get(entity);
+		}
+		if(Turret.instance.turrets.containsKey(other))
+		{
+			team2 = Turret.instance.turrets.get(other);
+		}
+		
+		return team1 == team2;
 	}
 	
 	private void createConfig()
@@ -57,14 +115,43 @@ public class LeagueOfMinecraft extends JavaPlugin
 	{
 		FileConfiguration config = this.getConfig();
 		
-		ConfigurationSection turretSection = config.getConfigurationSection("turrets");
-		if(turretSection != null)
+		ConfigurationSection teamSection = config.getConfigurationSection("teams");
+		if(teamSection != null)
 		{
-			Set<String> keys = turretSection.getKeys(false);
-			for(String key : keys)
+			map = new Map(teamSection);
+			new BukkitRunnable()
 			{
-				//load turrets
-			}
+				@Override
+				public void run()
+				{
+					new BukkitRunnable()
+					{
+						int count = 0;
+						int index = 0;
+						@Override
+						public void run()
+						{
+							if(count++ < waves.peek()[index])
+							{
+								Minion.spawnMinion(index);
+							}
+							else
+							{
+								index++;
+								count = 0;
+								if(index > waves.peek().length)
+								{
+									waves.push(waves.pop());
+									cancel();
+								}
+							}
+						}
+						
+					}.runTaskTimer(instance, 1, TPS / 5);
+				}
+				
+			}.runTaskTimer(this,1,TPS * 30);
+			
 		}
 	}
 	

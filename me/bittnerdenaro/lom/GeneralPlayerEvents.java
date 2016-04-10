@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.util.Vector;
 
 public class GeneralPlayerEvents implements Listener
@@ -79,5 +80,7 @@ public class GeneralPlayerEvents implements Listener
 	public void onPlayerJoin( PlayerJoinEvent event )
 	{
 		Champion ts = new Ashe(event.getPlayer(), LeagueOfMinecraft.Team.BLUE);
+		final Score score = ts.board.getObjective("Name").getScore( event.getPlayer() );
+        score.setScore( (int) ts.statMap.get("health").value);
 	}
 }

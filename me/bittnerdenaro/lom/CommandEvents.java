@@ -1,5 +1,6 @@
 package me.bittnerdenaro.lom;
 
+import me.bittnerdenaro.lom.LeagueOfMinecraft.Team;
 import me.bittnerdenaro.lom.entity.Turret;
 
 import org.bukkit.Location;
@@ -19,7 +20,18 @@ public class CommandEvents implements CommandExecutor
 			Player player = (Player) sender;
 			if("create-turret".equals(command.getName()))
 			{
-				Turret.instance.createTurret(player.getLocation());
+				if(args.length != 1)
+				{
+					return false;
+				}
+				if("red".equals(args[0]))
+				{
+					Turret.instance.createTurret(player.getLocation(), Team.RED);
+				}
+				if("blue".equals(args[0]))
+				{
+					Turret.instance.createTurret(player.getLocation(), Team.BLUE);
+				}
 			}
 			else if("slow".equals(command.getName()))
 			{
