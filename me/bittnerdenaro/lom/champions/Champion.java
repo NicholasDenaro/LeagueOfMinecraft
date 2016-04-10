@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.bittnerdenaro.lom.BDProjectile;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
+import me.bittnerdenaro.lom.Map;
 import me.bittnerdenaro.lom.entity.Healthable;
 import me.bittnerdenaro.lom.entity.Skillable;
 import me.bittnerdenaro.lom.skills.BasicAttack;
@@ -191,7 +192,7 @@ public abstract class Champion implements Skillable, Listener, Healthable
 		health.value -= ammount;
 		if(health.value <= 0)
 		{
-			//TODO: dead
+			die();
 		}
 		else
 		{
@@ -357,5 +358,36 @@ public abstract class Champion implements Skillable, Listener, Healthable
 				}
 			}
 		}
+	}
+	
+	public void die()
+	{
+		int time = (int) (2 * statMap.get("level").value + 5);
+		Location jail;
+		Location spawn;
+		if(this.team == LeagueOfMinecraft.Team.RED)
+		{
+			jail = LeagueOfMinecraft.instance.map.redJail;
+			spawn = LeagueOfMinecraft.instance.map.redSpawn;
+		}
+		else
+		{
+			jail = LeagueOfMinecraft.instance.map.blueJail;
+			spawn = LeagueOfMinecraft.instance.map.blueSpawn;
+		}
+		
+		//go to jail. 
+		Player playa = this.player;
+		playa.teleport(jail);
+		
+		new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				playa.teleport(spawn);
+				cancel();
+			}
+		}.runTaskTimer(LeagueOfMinecraft.instance,LeagueOfMinecraft.instance.TPS*time,1);
 	}
 }
