@@ -74,30 +74,34 @@ public abstract class Champion implements Listener{
 	
 	public void rightClick( PlayerEvent event )
 	{		
-		int slot = event.getPlayer().getInventory().getHeldItemSlot();
-		if( event.getPlayer() == this.player )
-		switch( slot )
+		Player player = event.getPlayer();
+		if(LeagueOfMinecraft.instance.cc.canCast(player))
 		{
-			case 0:
-				this.skill1.use(event);
-				break;
-			case 1:
-				this.skill2.use(event);
-				break;
-			case 2:
-				this.skill3.use(event);
-				break;
-			case 3:
-				this.skill4.use(event);
-				break;
-			case 4:
-				this.summonerSkill1.use(event);
-				break;
-			case 5:
-				this.summonerSkill2.use(event);
-				break;
-			default:
-				event.getPlayer().sendMessage("Invalid slot used - no spell here boys");				
+			int slot = event.getPlayer().getInventory().getHeldItemSlot();
+			if( event.getPlayer() == this.player )
+			switch( slot )
+			{
+				case 0:
+					this.skill1.use(event);
+					break;
+				case 1:
+					this.skill2.use(event);
+					break;
+				case 2:
+					this.skill3.use(event);
+					break;
+				case 3:
+					this.skill4.use(event);
+					break;
+				case 4:
+					this.summonerSkill1.use(event);
+					break;
+				case 5:
+					this.summonerSkill2.use(event);
+					break;
+				default:
+					event.getPlayer().sendMessage("Invalid slot used - no spell here boys");				
+			}
 		}
 	}
 

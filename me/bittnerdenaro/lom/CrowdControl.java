@@ -4,23 +4,31 @@ import java.util.HashMap;
 
 import net.minecraft.server.v1_9_R1.Tuple;
 
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
-public class CrowdControl
+public class CrowdControl implements Listener
 {
 	private HashMap<Player, Integer> silence = new HashMap<Player, Integer>();
 	private HashMap<Player, Tuple<Double, BukkitRunnable>> slow = new HashMap<Player, Tuple<Double, BukkitRunnable>>();
 	private HashMap<Player, Integer> stun = new HashMap<Player, Integer>();
 	private HashMap<Player, Integer> root = new HashMap<Player, Integer>();
 	private HashMap<Player, Integer> polymorph = new HashMap<Player, Integer>();
-	private HashMap<Player, Integer> knockup = new HashMap<Player, Integer>();
-	private HashMap<Player, Integer> knockback = new HashMap<Player, Integer>();
+	private HashMap<Player, Double> knockup = new HashMap<Player, Double>();
+	private HashMap<Player, Double> knockback = new HashMap<Player, Double>();
 	
+	public boolean canCast(Player player)
+	{
+		return !isStunned(player) && !isSilenced(player) && !isPolymorphed(player) && !isKnockedup(player) && !isKnockedback(player);
+	}
 	
 	public void silence(Player player, int duration)
 	{
@@ -43,17 +51,15 @@ public class CrowdControl
 		{
 			if(slow.containsKey(player))
 				slow.remove(player).b().cancel();
-			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration, (int)(percent / 10)));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration, (int)(percent / 15)));
 			BukkitRunnable runnable = new BukkitRunnable()
 			{
-
 				@Override
 				public void run()
 				{
 					player.removePotionEffect(PotionEffectType.SLOW);
 					endSlow(player);
 				}
-				
 			};
 
 			slow.put(player, new Tuple<Double, BukkitRunnable>(percent, runnable));
@@ -96,12 +102,29 @@ public class CrowdControl
 	}
 	
 	@EventHandler
-	public void onPlayerStunnedOrRoot(PlayerMoveEvent event)
+	public void onPlayerMove(PlayerMoveEvent event)
 	{
 		Player player = event.getPlayer();
 		if(isStunned(player) || isRooted(player))
 		{
 			event.setCancelled(true);
+		}
+		if(isKnockedup(player) && !isKnockedback(player))
+		{
+			Vector vel = event.getPlayer().getVelocity();
+			vel.setX(0);
+			vel.setZ(0);
+			event.getPlayer().setVelocity(vel);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerLand(PlayerVelocityEvent event)
+	{
+		if(event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType().isSolid() && event.getVelocity().getY() < 0)
+		{
+			endKnockup(event.getPlayer());
+			event.getPlayer().sendMessage("vel: " + event.getVelocity());
 		}
 	}
 	
@@ -135,10 +158,10 @@ public class CrowdControl
 		return polymorph.containsKey(player);
 	}
 	
-	public void knockup(Player player, int duration)
+	public void knockup(Player player, double distance)
 	{
-		knockup.put(player,duration);
-		player.setVelocity(player.getVelocity().setY(3));
+		knockup.put(player,distance);
+		player.setVelocity(player.getVelocity().setY(distance));
 	}
 	
 	public void endKnockup(Player player)
@@ -151,9 +174,10 @@ public class CrowdControl
 		return knockup.containsKey(player);
 	}
 	
-	public void knockback(Player player, int duration)
+	public void knockback(Player player, double distance, Vector direction)
 	{
-		knockback.put(player,duration);
+		knockback.put(player, distance);
+		player.setVelocity(direction.normalize().multiply(distance));
 	}
 	
 	public void endKnockback(Player player)

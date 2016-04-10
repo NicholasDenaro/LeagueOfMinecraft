@@ -27,13 +27,14 @@ public class LeagueOfMinecraft extends JavaPlugin
 		loadCommands();
 		getServer().broadcastMessage(ChatColor.GREEN + "LeagueOfMinecraft enabled!");
 		instance = this;
-		cc = new CrowdControl();
 	}
 	
 	private void loadHandlers()
 	{
 		this.getServer().getPluginManager().registerEvents(new GeneralPlayerEvents(), this);
 		this.getServer().getPluginManager().registerEvents(new Turret(), this);
+		cc = new CrowdControl();
+		this.getServer().getPluginManager().registerEvents(cc, this);
 
 	}
 	
@@ -72,6 +73,8 @@ public class LeagueOfMinecraft extends JavaPlugin
 		
 		getCommand("create-turret").setExecutor(commander);
 		getCommand("slow").setExecutor(commander);
+		getCommand("knockup").setExecutor(commander);
+		getCommand("knockback").setExecutor(commander);
 	}
 	
 	public void addHandler( Listener listener )
