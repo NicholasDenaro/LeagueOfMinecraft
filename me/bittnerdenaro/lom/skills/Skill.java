@@ -1,6 +1,9 @@
 package me.bittnerdenaro.lom.skills;
 
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class Skill 
 {
@@ -44,4 +47,6 @@ public abstract class Skill
 	public abstract int getManaCost();
 	
 	public abstract void use( PlayerEvent event );
+	
+	public abstract void hit(LivingEntity entity);
 }

@@ -3,6 +3,8 @@ package me.bittnerdenaro.lom;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.bittnerdenaro.lom.skills.Skill;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -29,12 +31,28 @@ public class BDSkillShot
 		this.direction = direction;
 		this.skill = skill;
 		
+		Vector vel = direction.clone().multiply(speed);
+		
+		projectile.setVelocity(vel);
+		
+		Location start = projectile.getLocation().clone();
+		
 		BukkitRunnable runnable = new BukkitRunnable()
 		{
 
 			@Override
 			public void run()
 			{
+				if(projectile.isDead() || projectile.getLocation().distance(start) > distance)
+				{
+					if(projectile.isDead())
+					{
+					}
+					cancel();
+					projectile.remove();
+					return;
+				}
+				//LeagueOfMinecraft.instance.getServer().broadcastMessage("move");
 				//projectile.setVelocity(new Vector(0,0,0));
 				//projectile
 				Location current = projectile.getLocation();
@@ -43,7 +61,7 @@ public class BDSkillShot
 				double distance = 10;
 				for(Entity ent : ents)
 				{
-					if(ent instanceof LivingEntity)
+					if(ent instanceof LivingEntity && ent != shooter)
 					{
 						double dist = ent.getLocation().distance(current);
 						if(dist < distance)

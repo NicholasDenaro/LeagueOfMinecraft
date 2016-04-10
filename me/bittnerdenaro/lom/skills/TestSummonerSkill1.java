@@ -1,6 +1,8 @@
 package me.bittnerdenaro.lom.skills;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class TestSummonerSkill1 extends Skill {
 
@@ -31,6 +33,11 @@ public class TestSummonerSkill1 extends Skill {
 	public void use(PlayerEvent event) {
 		// TODO Auto-generated method stub
 		event.getPlayer().sendMessage("Sum1");
+	}
+
+	@Override
+	public void hit(LivingEntity entity)
+	{
 	}
 
 }

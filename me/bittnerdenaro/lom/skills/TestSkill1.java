@@ -1,6 +1,15 @@
 package me.bittnerdenaro.lom.skills;
 
+import me.bittnerdenaro.lom.BDSkillShot;
+import me.bittnerdenaro.lom.LeagueOfMinecraft;
+
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.util.Vector;
 
 public class TestSkill1 extends Skill {
 
@@ -30,7 +39,22 @@ public class TestSkill1 extends Skill {
 	@Override
 	public void use(PlayerEvent event) {
 		// TODO Auto-generated method stub
-		event.getPlayer().sendMessage("Used q!");
+		//event.getPlayer().sendMessage("Used q!");
+		Location loc = event.getPlayer().getLocation().clone();
+		loc.setPitch(0);
+		Vector dir = loc.getDirection().normalize();
+		Projectile proj = (Projectile)LeagueOfMinecraft.instance.getWorld().spawnEntity(event.getPlayer().getEyeLocation().clone().add(dir),EntityType.SNOWBALL);
+		
+		new BDSkillShot(event.getPlayer(), proj, 1, 10, dir, this);
+	}
+
+	@Override
+	public void hit(LivingEntity entity)
+	{
+		if(entity instanceof Player)
+		{
+			entity.sendMessage("hit by " + name);
+		}
 	}
 
 }

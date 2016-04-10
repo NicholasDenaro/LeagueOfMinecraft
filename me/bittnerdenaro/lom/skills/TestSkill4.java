@@ -1,6 +1,8 @@
 package me.bittnerdenaro.lom.skills;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class TestSkill4 extends Skill {
 
@@ -31,6 +33,11 @@ public class TestSkill4 extends Skill {
 	public void use(PlayerEvent event) {
 		// TODO Auto-generated method stub
 		event.getPlayer().sendMessage("Used ult!");
+	}
+
+	@Override
+	public void hit(LivingEntity entity)
+	{
 	}
 
 }
