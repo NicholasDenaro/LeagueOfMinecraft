@@ -3,18 +3,20 @@ package me.bittnerdenaro.lom;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.bittnerdenaro.lom.entity.Skillable;
 import me.bittnerdenaro.lom.skills.Skill;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class BDSkillShot
 {
-	private Entity shooter;
+	private Skillable shooter;
 	private Projectile projectile;
 	private double speed;
 	private double distance;
@@ -22,7 +24,7 @@ public class BDSkillShot
 	private BukkitRunnable onHit;
 	private Skill skill;
 	
-	public BDSkillShot(Entity shooter, Projectile projectile, double speed, double distance, Vector direction, Skill skill)
+	public BDSkillShot(Skillable shooter, Projectile projectile, double speed, double distance, Vector direction, Skill skill)
 	{
 		this.shooter = shooter;
 		this.projectile = projectile;
@@ -77,7 +79,7 @@ public class BDSkillShot
 					{
 						cancel();
 						projectile.remove();
-						skill.hit(closest);
+						skill.hit(shooter, closest);
 					}
 				}
 				else

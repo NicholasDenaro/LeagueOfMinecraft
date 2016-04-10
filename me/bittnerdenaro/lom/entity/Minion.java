@@ -5,6 +5,7 @@ import java.util.List;
 import me.bittnerdenaro.lom.BDProjectile;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
 import me.bittnerdenaro.lom.LeagueOfMinecraft.Team;
+import me.bittnerdenaro.lom.skills.BasicAttack;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -18,7 +19,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public abstract class Minion
+public abstract class Minion extends Skillable
 {
 	public LivingEntity me;
 	public Team team;
@@ -42,6 +43,8 @@ public abstract class Minion
 		me.setAI(false);
 		me.setInvulnerable(true);
 		
+		Minion thisMinion = this;
+		
 		double range = getRange();
 		
 		new BukkitRunnable()
@@ -63,15 +66,7 @@ public abstract class Minion
 							Location spawnLoc = me.getEyeLocation().clone().add(dir.multiply(2));
 							spawnLoc.add(new Vector(0,0.5,0));
 							Projectile proj = (Projectile)LeagueOfMinecraft.instance.getWorld().spawnEntity(spawnLoc, EntityType.ARROW);
-							new BDProjectile(me, proj, 0.3, target, new BukkitRunnable(){
-
-								@Override
-								public void run()
-								{
-									//target.sendMessage("You got hit!");
-								}
-								
-							});
+							new BDProjectile(thisMinion, proj, 0.3, target, new BasicAttack());
 						}
 						else
 						{

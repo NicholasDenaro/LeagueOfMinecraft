@@ -7,6 +7,7 @@ import java.util.List;
 import me.bittnerdenaro.lom.BDProjectile;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
 import me.bittnerdenaro.lom.LeagueOfMinecraft.Team;
+import me.bittnerdenaro.lom.skills.TestSkill1;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -19,16 +20,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class Turret implements Listener
+public class Turret extends Skillable
 {
 	public static Turret instance;
 	public static final int TURRET_RADIUS = 20;
 	public HashMap<Entity, Team> turrets = new HashMap<Entity, Team>();
 	
-	public Turret()
+	private LivingEntity me;
+	private Team team;
+	
+	public Turret(LivingEntity entity, Team team)
 	{
 		super();
 		instance = this;
+		this.me = entity;
+		this.team = team;
+		turrets.put(me, team);
 	}
 	
 	public void createTurret(Location location, Team team)
@@ -37,7 +44,8 @@ public class Turret implements Listener
 		Snowman turret = (Snowman)world.spawnEntity(location, EntityType.SNOWMAN);
 		turret.setAI(false);
 		turret.setInvulnerable(true);
-		turrets.put(turret, team);
+		
+		Turret thisTurret = new Turret(turret, team);
 		
 		BukkitRunnable runnable = new BukkitRunnable()
 		{
@@ -62,15 +70,7 @@ public class Turret implements Listener
 						{
 							Vector dir = target.getEyeLocation().clone().subtract(turret.getEyeLocation()).toVector().normalize();
 							Projectile proj = (Projectile)LeagueOfMinecraft.instance.getWorld().spawnEntity(turret.getEyeLocation().clone().add(dir.multiply(2)),EntityType.SHULKER_BULLET);
-							new BDProjectile(turret, proj, 0.3, target, new BukkitRunnable(){
-
-								@Override
-								public void run()
-								{
-									//target.sendMessage("You got hit!");
-								}
-								
-							});
+							new BDProjectile(thisTurret, proj, 0.3, target, new TestSkill1());
 						}
 						else
 						{

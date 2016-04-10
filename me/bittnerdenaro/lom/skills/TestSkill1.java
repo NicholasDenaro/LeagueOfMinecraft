@@ -2,6 +2,7 @@ package me.bittnerdenaro.lom.skills;
 
 import me.bittnerdenaro.lom.BDSkillShot;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
+import me.bittnerdenaro.lom.entity.Skillable;
 
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -45,11 +46,11 @@ public class TestSkill1 extends Skill {
 		Vector dir = loc.getDirection().normalize();
 		Projectile proj = (Projectile)LeagueOfMinecraft.instance.getWorld().spawnEntity(event.getPlayer().getEyeLocation().clone().add(dir),EntityType.SNOWBALL);
 		
-		new BDSkillShot(event.getPlayer(), proj, 1, 10, dir, this);
+		new BDSkillShot(LeagueOfMinecraft.instance.playersChamp.get(event.getPlayer()), proj, 1, 10, dir, this);
 	}
 
 	@Override
-	public void hit(LivingEntity entity)
+	public void hit(Skillable player, LivingEntity entity)
 	{
 		if(entity instanceof Player)
 		{

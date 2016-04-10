@@ -1,6 +1,9 @@
 package me.bittnerdenaro.lom.skills;
 
+import me.bittnerdenaro.lom.entity.Skillable;
+
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -36,7 +39,7 @@ public class TestSummonerSkill2 extends Skill {
 	}
 
 	@Override
-	public void hit(LivingEntity entity)
+	public void hit(Skillable player, LivingEntity entity)
 	{
 	}
 

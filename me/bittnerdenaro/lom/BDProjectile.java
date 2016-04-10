@@ -1,5 +1,8 @@
 package me.bittnerdenaro.lom;
 
+import me.bittnerdenaro.lom.entity.Skillable;
+import me.bittnerdenaro.lom.skills.Skill;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -10,19 +13,19 @@ import org.bukkit.util.Vector;
 
 public class BDProjectile
 {
-	private Entity shooter;
+	private Skillable shooter;
 	private Projectile projectile;
 	private double speed;
 	private LivingEntity target;
-	private BukkitRunnable onHit;
+	private Skill skill;
 	
-	public BDProjectile(Entity shooter, Projectile projectile, double speed, LivingEntity target, BukkitRunnable onHit)
+	public BDProjectile(Skillable shooter, Projectile projectile, double speed, LivingEntity target, Skill skill)
 	{
 		this.shooter = shooter;
 		this.projectile = projectile;
 		this.speed = speed;
 		this.target = target;
-		this.onHit = onHit;
+		this.skill = skill;
 		
 		Vector dir = target.getEyeLocation().clone().subtract(projectile.getLocation()).toVector().normalize();
 		dir = dir.multiply(speed);
@@ -42,7 +45,7 @@ public class BDProjectile
 				{
 					cancel();
 					projectile.remove();
-					onHit.run();
+					skill.hit(shooter, target);
 				}
 				else
 				{

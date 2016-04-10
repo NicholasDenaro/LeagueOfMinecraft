@@ -57,7 +57,6 @@ public class LeagueOfMinecraft extends JavaPlugin
 	private void loadHandlers()
 	{
 		this.getServer().getPluginManager().registerEvents(new GeneralPlayerEvents(), this);
-		this.getServer().getPluginManager().registerEvents(new Turret(), this);
 		cc = new CrowdControl();
 		this.getServer().getPluginManager().registerEvents(cc, this);
 
@@ -139,15 +138,15 @@ public class LeagueOfMinecraft extends JavaPlugin
 							{
 								index++;
 								count = 0;
-								if(index > waves.peek().length)
+								if(index >= waves.peek().length)
 								{
-									waves.push(waves.pop());
+									waves.addLast(waves.pop());
 									cancel();
 								}
 							}
 						}
 						
-					}.runTaskTimer(instance, 1, TPS / 5);
+					}.runTaskTimer(instance, 1, TPS / 2);
 				}
 				
 			}.runTaskTimer(this,1,TPS * 30);

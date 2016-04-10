@@ -1,5 +1,7 @@
 package me.bittnerdenaro.lom.skills;
 
+import me.bittnerdenaro.lom.entity.Skillable;
+
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
@@ -48,5 +50,5 @@ public abstract class Skill
 	
 	public abstract void use( PlayerEvent event );
 	
-	public abstract void hit(LivingEntity entity);
+	public abstract void hit(Skillable player, LivingEntity entity);
 }

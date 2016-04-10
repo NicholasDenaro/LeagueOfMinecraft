@@ -1,11 +1,12 @@
 package me.bittnerdenaro.lom.champions;
 
 import java.util.HashMap;
-
 import java.util.List;
 
 import me.bittnerdenaro.lom.BDProjectile;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
+import me.bittnerdenaro.lom.entity.Skillable;
+import me.bittnerdenaro.lom.skills.BasicAttack;
 import me.bittnerdenaro.lom.skills.Skill;
 import net.minecraft.server.v1_9_R1.Tuple;
 
@@ -36,7 +37,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-public abstract class Champion implements Listener{
+public abstract class Champion extends Skillable implements Listener{
 	
 	public HashMap<String, Stat> statMap;
 	
@@ -172,6 +173,11 @@ public abstract class Champion implements Listener{
         is.setItemMeta(m);
         return is;
     }
+	
+	public void damage(int ammount)
+	{
+		
+	}
 
 	private Scoreboard createScoreBoard( double maxHealth ) 
 	{
@@ -289,15 +295,7 @@ public abstract class Champion implements Listener{
 					player.sendMessage("basic attacked!");
 					Vector projdir = target.getEyeLocation().clone().subtract(player.getEyeLocation()).toVector().normalize();
 					Projectile proj = (Projectile)LeagueOfMinecraft.instance.getWorld().spawnEntity(player.getEyeLocation().clone().add(projdir.multiply(2)),EntityType.ARROW);
-					new BDProjectile(player, proj, 0.3, target, new BukkitRunnable(){
-
-						@Override
-						public void run()
-						{
-							target.sendMessage("You got hit by a basic attack!");
-						}
-						
-					});
+					new BDProjectile(this, proj, 0.3, target, new BasicAttack());
 					return;
 				}
 			}

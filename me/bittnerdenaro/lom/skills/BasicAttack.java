@@ -1,14 +1,17 @@
 package me.bittnerdenaro.lom.skills;
 
+import me.bittnerdenaro.lom.entity.Skillable;
+
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
 
 public class BasicAttack extends Skill
 {
 
-	public BasicAttack(String name, int maxLevel)
+	public BasicAttack()
 	{
-		super(name,maxLevel);
+		super("basic",0);
 	}
 
 	@Override
@@ -35,12 +38,10 @@ public class BasicAttack extends Skill
 	@Override
 	public void use(PlayerEvent event)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public void hit(LivingEntity entity)
+	public void hit(Skillable player, LivingEntity entity)
 	{
 		// TODO Auto-generated method stub
 		
