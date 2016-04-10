@@ -177,6 +177,11 @@ public abstract class Champion implements Skillable, Listener, Healthable
         return is;
     }
 
+	@Override
+	public LivingEntity me()
+	{
+		return player;
+	}
 
 	@Override
 	public void damage(double ammount)

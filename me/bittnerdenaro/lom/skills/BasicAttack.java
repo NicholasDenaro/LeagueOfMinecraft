@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerEvent;
 
 public class BasicAttack extends Skill
 {
-
+	
 	public BasicAttack()
 	{
 		super("basic",0);

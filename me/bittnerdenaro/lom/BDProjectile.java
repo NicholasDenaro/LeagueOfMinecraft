@@ -6,10 +6,14 @@ import me.bittnerdenaro.lom.skills.Skill;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class BDProjectile
+public class BDProjectile implements Listener
 {
 	private Skillable shooter;
 	private Projectile projectile;
@@ -24,6 +28,8 @@ public class BDProjectile
 		this.speed = speed;
 		this.target = target;
 		this.skill = skill;
+		
+		LeagueOfMinecraft.instance.getServer().getPluginManager().registerEvents(this, LeagueOfMinecraft.instance);
 		
 		Vector dir = target.getEyeLocation().clone().subtract(projectile.getLocation()).toVector().normalize();
 		dir = dir.multiply(speed);
@@ -62,5 +68,20 @@ public class BDProjectile
 		runnable.runTaskTimer(LeagueOfMinecraft.instance,1,1);
 	}
 	
-	
+	@EventHandler
+	public void onProjectileHit(EntityDamageByEntityEvent event)
+	{
+		if(event.getDamager() == this.projectile)
+		{
+			if(LeagueOfMinecraft.instance.sameTeam(event.getEntity(), shooter.me()))
+			{
+				event.setCancelled(true);
+				if(projectile.isDead())
+				{
+					LeagueOfMinecraft.instance.getServer().broadcastMessage("whoops, it died too soon.");
+				}
+				projectile.getLocation().add(projectile.getVelocity());
+			}
+		}
+	}
 }

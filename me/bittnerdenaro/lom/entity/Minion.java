@@ -71,7 +71,7 @@ public abstract class Minion implements Skillable, Healthable
 					if(timer-- == 0)
 					{
 						timer = repeat;
-						if(canStillShoot())
+						if(canStillShoot() && !target.isDead() && !LeagueOfMinecraft.instance.healthables.get(target).isDead())
 						{
 							Vector dir = target.getLocation().clone().subtract(me.getEyeLocation()).toVector().normalize();
 							Location spawnLoc = me.getEyeLocation().clone().add(dir.multiply(2));
@@ -147,27 +147,27 @@ public abstract class Minion implements Skillable, Healthable
 		this.health = health;
 	}
 	
-	public static void spawnMinion(int type)
+	public static void spawnMinion(int type, Team team)
 	{
 		switch(type)
 		{
 			case 0:
-				spawnMeleeMinion();
+				spawnMeleeMinion(team);
 			return;
 			case 1:
-				spawnRangedMinion();
+				spawnRangedMinion(team);
 			return;
 			case 2:
-				spawnSeigeMinion();
+				spawnSeigeMinion(team);
 			return;
 		}
 	}
 	
-	public static void spawnMeleeMinion()
+	public static void spawnMeleeMinion(Team team)
 	{
-		Slime slime = (Slime)LeagueOfMinecraft.instance.getWorld().spawnEntity(LeagueOfMinecraft.instance.map.redNexus,EntityType.SLIME);
+		Slime slime = (Slime)LeagueOfMinecraft.instance.getWorld().spawnEntity(LeagueOfMinecraft.instance.map.getMyNexus(team),EntityType.SLIME);
 		slime.setSize(2);
-		new Minion(slime,Team.RED, 455)
+		new Minion(slime, team, 455)
 		{
 			@Override
 			public int getRange()
@@ -185,11 +185,11 @@ public abstract class Minion implements Skillable, Healthable
 		};
 	}
 	
-	public static void spawnRangedMinion()
+	public static void spawnRangedMinion(Team team)
 	{
-		MagmaCube magmaCube = (MagmaCube)LeagueOfMinecraft.instance.getWorld().spawnEntity(LeagueOfMinecraft.instance.map.redNexus,EntityType.MAGMA_CUBE);
+		MagmaCube magmaCube = (MagmaCube)LeagueOfMinecraft.instance.getWorld().spawnEntity(LeagueOfMinecraft.instance.map.getMyNexus(team),EntityType.MAGMA_CUBE);
 		magmaCube.setSize(2);
-		new Minion(magmaCube,Team.RED, 290)
+		new Minion(magmaCube, team, 290)
 		{
 
 			@Override
@@ -207,13 +207,13 @@ public abstract class Minion implements Skillable, Healthable
 		};
 	}
 	
-	public static void spawnSeigeMinion()
+	public static void spawnSeigeMinion(Team team)
 	{
 		//Minecart boomcart = (Minecart)LeagueOfMinecraft.instance.getWorld().spawnEntity(map.redNexus,EntityType.MINECART_TNT);
-		Zombie zombie = (Zombie)LeagueOfMinecraft.instance.getWorld().spawnEntity(LeagueOfMinecraft.instance.map.redNexus,EntityType.ZOMBIE);
+		Zombie zombie = (Zombie)LeagueOfMinecraft.instance.getWorld().spawnEntity(LeagueOfMinecraft.instance.map.getMyNexus(team),EntityType.ZOMBIE);
 		zombie.setBaby(true);
 		//zombie.setPassenger(boomcart);
-		new Minion(zombie,Team.RED, 830)
+		new Minion(zombie, team, 830)
 		{
 			@Override
 			public int getRange()
@@ -227,6 +227,12 @@ public abstract class Minion implements Skillable, Healthable
 				return 41;
 			}
 		};
+	}
+
+	@Override
+	public LivingEntity me()
+	{
+		return me;
 	}
 	
 	private boolean canStillShoot()

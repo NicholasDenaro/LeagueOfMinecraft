@@ -28,6 +28,19 @@ public class Map
 		}
 	}
 	
+	public Location getMyNexus(Team team)
+	{
+		switch(team)
+		{
+			case RED:
+				return redNexus;
+			case BLUE:
+				return blueNexus;
+			default:
+				return redNexus;
+		}
+	}
+	
 	public Location getOpposingNexus(Team team)
 	{
 		switch(team)

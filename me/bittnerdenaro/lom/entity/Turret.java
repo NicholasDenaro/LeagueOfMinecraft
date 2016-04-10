@@ -138,4 +138,10 @@ public class Turret implements Skillable, Healthable
 	{
 		this.health = health;
 	}
+
+	@Override
+	public LivingEntity me()
+	{
+		return me;
+	}
 }

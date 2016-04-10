@@ -137,7 +137,8 @@ public class LeagueOfMinecraft extends JavaPlugin
 						{
 							if(count++ < waves.peek()[index])
 							{
-								Minion.spawnMinion(index);
+								Minion.spawnMinion(index, Team.RED);
+								Minion.spawnMinion(index, Team.BLUE);
 							}
 							else
 							{
