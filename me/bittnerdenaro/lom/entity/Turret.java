@@ -60,10 +60,7 @@ public class Turret implements Listener
 						if(canStillShoot(turret,target))
 						{
 							Vector dir = target.getEyeLocation().clone().subtract(turret.getEyeLocation()).toVector().normalize();
-							//Arrow arrow = LeagueOfMinecraft.instance.getWorld().spawnArrow(turret.getEyeLocation().clone().add(dir), dir, 0, 0);
 							Projectile proj = (Projectile)LeagueOfMinecraft.instance.getWorld().spawnEntity(turret.getEyeLocation().clone().add(dir.multiply(2)),EntityType.SHULKER_BULLET);
-							//arrow.setBounce(false);
-							//arrow.setFallDistance(0);
 							new BDProjectile(turret, proj, 0.3, target, new BukkitRunnable(){
 
 								@Override

@@ -1,26 +1,38 @@
 package me.bittnerdenaro.lom.champions;
 
+import java.util.List;
+
+import me.bittnerdenaro.lom.BDProjectile;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
 import me.bittnerdenaro.lom.skills.Skill;
+import net.minecraft.server.v1_9_R1.Tuple;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.Vector;
 
 public abstract class Champion implements Listener{
 	
@@ -199,7 +211,20 @@ public abstract class Champion implements Listener{
 	public void handleClickNotOnEntity( PlayerInteractEvent event )
 	{
 		event.setCancelled(true);
-		rightClick(event);
+		if( event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK )
+			rightClick(event);
+		else
+			leftClick(event.getPlayer());
+	}
+	
+	@EventHandler//have to use eggs (or at least sticks cause double event, other items may work)
+	public void handleClickOnEntity( EntityDamageByEntityEvent event )
+	{
+		event.setCancelled(true);
+		if(event.getDamager() instanceof Player)
+		{
+			leftClick((Player)event.getDamager());
+		}
 	}
 	
 	public void rightClick( PlayerEvent event )
@@ -209,30 +234,85 @@ public abstract class Champion implements Listener{
 		{
 			int slot = event.getPlayer().getInventory().getHeldItemSlot();
 			if( event.getPlayer() == this.player )
-			switch( slot )
 			{
-				case 0:
-					this.skill1.use(event);
-					break;
-				case 1:
-					this.skill2.use(event);
-					break;
-				case 2:
-					this.skill3.use(event);
-					break;
-				case 3:
-					this.skill4.use(event);
-					break;
-				case 4:
-					this.summonerSkill1.use(event);
-					break;
-				case 5:
-					this.summonerSkill2.use(event);
-					break;
-				default:
-					event.getPlayer().sendMessage("Invalid slot used - no spell here boys");				
+				switch( slot )
+				{
+					case 0:
+						this.skill1.use(event);
+						break;
+					case 1:
+						this.skill2.use(event);
+						break;
+					case 2:
+						this.skill3.use(event);
+						break;
+					case 3:
+						this.skill4.use(event);
+						break;
+					case 4:
+						this.summonerSkill1.use(event);
+						break;
+					case 5:
+						this.summonerSkill2.use(event);
+						break;
+					default:
+						event.getPlayer().sendMessage("Invalid slot used - no spell here boys");				
+				}
 			}
 		}
 	}
 
+	public void leftClick(Player player)
+	{
+		//Player player = event.getPlayer();
+		if( player == this.player )
+		{
+			Location loc = player.getLocation().clone();
+			loc.setPitch(0);
+			
+			Vector dir = loc.getDirection().normalize().multiply(0.5);
+			Location pos = loc.clone();
+			//Tuple<Double, Score> val = statMap.get("range").b();
+			
+			List<Entity> entities = LeagueOfMinecraft.instance.getWorld().getEntities();
+			while(loc.distance(pos) < range / 100)
+			{
+				loc.add(dir);
+				LivingEntity closest = null;
+				double distance = 0.5;
+				for(Entity entity : entities)
+				{
+					if(entity instanceof LivingEntity && entity != player)
+					{
+						double dist = entity.getLocation().distance(loc);
+						if(dist < distance)
+						{
+							closest = (LivingEntity)entity;
+							distance = dist;
+						}
+					}
+				}
+				
+				LivingEntity target = closest;
+				
+				if(target != null)
+				{
+					//targetted!
+					player.sendMessage("basic attacked!");
+					Vector projdir = target.getEyeLocation().clone().subtract(player.getEyeLocation()).toVector().normalize();
+					Projectile proj = (Projectile)LeagueOfMinecraft.instance.getWorld().spawnEntity(player.getEyeLocation().clone().add(projdir.multiply(2)),EntityType.ARROW);
+					new BDProjectile(player, proj, 0.3, target, new BukkitRunnable(){
+
+						@Override
+						public void run()
+						{
+							target.sendMessage("You got hit by a basic attack!");
+						}
+						
+					});
+					return;
+				}
+			}
+		}
+	}
 }
