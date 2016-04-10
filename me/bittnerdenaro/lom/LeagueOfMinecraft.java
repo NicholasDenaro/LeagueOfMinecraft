@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LeagueOfMinecraft extends JavaPlugin
 {
 	public static LeagueOfMinecraft instance;
+	public static enum Team{RED, BLUE};
 	public static final int TPS = 20;
 	public CrowdControl cc;
 	

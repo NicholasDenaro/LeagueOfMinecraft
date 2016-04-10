@@ -1,5 +1,6 @@
 package me.bittnerdenaro.lom.champions;
 
+import me.bittnerdenaro.lom.LeagueOfMinecraft;
 import me.bittnerdenaro.lom.skills.TestSkill1;
 import me.bittnerdenaro.lom.skills.TestSkill2;
 import me.bittnerdenaro.lom.skills.TestSkill3;
@@ -11,11 +12,13 @@ import org.bukkit.entity.Player;
 
 public class TestChampion extends Champion {
 
-	public TestChampion(Player player)
+	public TestChampion(Player player, LeagueOfMinecraft.Team team)
 	{
-		super( player, 0, 0, 0, 0, 
+		super( player, team, "Test!", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				new TestSkill1(), new TestSkill2(), new TestSkill3(), new TestSkill4(),
 				new TestSummonerSkill1(), new TestSummonerSkill2() );
+		
+		
 	}
 
 }

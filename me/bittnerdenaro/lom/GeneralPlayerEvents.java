@@ -1,5 +1,6 @@
 package me.bittnerdenaro.lom;
 
+import me.bittnerdenaro.lom.champions.Ashe;
 import me.bittnerdenaro.lom.champions.Champion;
 import me.bittnerdenaro.lom.champions.TestChampion;
 
@@ -77,6 +78,6 @@ public class GeneralPlayerEvents implements Listener
 	@EventHandler
 	public void onPlayerJoin( PlayerJoinEvent event )
 	{
-		Champion ts = new TestChampion(event.getPlayer());
+		Champion ts = new Ashe(event.getPlayer(), LeagueOfMinecraft.Team.BLUE);
 	}
 }

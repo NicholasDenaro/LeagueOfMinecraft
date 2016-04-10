@@ -3,40 +3,102 @@ package me.bittnerdenaro.lom.champions;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
 import me.bittnerdenaro.lom.skills.Skill;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
 public abstract class Champion implements Listener{
 	
-	Player player;
-	private int health;
-	private int mana;
-	private int moveSpeed;
-	private int attackSpeed;
-	private int level;
+	//player info
+	public Player player;
+	public LeagueOfMinecraft.Team team;
+	public Scoreboard board;
 	
-	private Skill skill1;
-	private Skill skill2;
-	private Skill skill3;
-	private Skill skill4;
-	private Skill summonerSkill1;
-	private Skill summonerSkill2;
+	//champion info
+	public String name;
+
+	public double health;
+	public double healthRegen;
+	public double mana;
+	public double manaRegen;
+	public double range;
+	public double attackDamage;
+	public double armor;
+	public double magicResist;
+	public double moveSpeed;
+	public double attackSpeed;
+	
+	public double abilityPower;
+	public double armorPenetration;
+	public double magicPenetration;	
+	public double cooldownReduction;
+	public double critChance;
+	public double lifeSteal;
+	public double spellVamp;
+	public double tenacity;
+	
+	public int level;
+	public int experience;
 	
 	
-	public Champion ( Player player, int health, int mana, int moveSpeed, int attackSpeed, 
+	//skills
+	public Skill skill1;
+	public Skill skill2;
+	public Skill skill3;
+	public Skill skill4;
+	public Skill summonerSkill1;
+	public Skill summonerSkill2;
+	
+	
+	public Champion ( Player player, LeagueOfMinecraft.Team team, String name, 
+						double health, double healthRegen, double mana, double manaRegen, double range, 
+						double attackDamage, double armor, double magicResist, double moveSpeed, double attackSpeed, 
 						Skill skill1, Skill skill2, Skill skill3, Skill skill4,
 						Skill summonerSkill1, Skill summonerSkill2 )
 	{
 		this.player = player;
+		this.team = team;
+		
+		this.name = name;
+		
 		this.health = health;
+		this.healthRegen = healthRegen;
 		this.mana = mana;
+		this.manaRegen = manaRegen;
+		this.range = range;
+		this.attackDamage = attackDamage;
+		this.armor = armor;
+		this.magicResist = magicResist;
 		this.moveSpeed = moveSpeed;
 		this.attackSpeed = attackSpeed;
+		
+		
+		this.abilityPower = 0;
+		this.armorPenetration = 0;
+		this.magicPenetration = 0;
+		this.cooldownReduction = 0;
+		this.critChance = 0;
+		this.spellVamp = 0;
+		this.lifeSteal = 0;
+		this.tenacity = 0;
+
+		this.level = 1;
+		this.experience = 0;
 		
 		this.skill1 = skill1;
 		this.skill2 = skill2;
@@ -45,16 +107,83 @@ public abstract class Champion implements Listener{
 		this.summonerSkill1 = summonerSkill1;
 		this.summonerSkill2 = summonerSkill2;
 		
-		this.level = 1;
+		initSpells();
+		
+		//init scoreboard
+		this.board = createScoreBoard();
+		
+		//set scoreboard
+		this.player.setScoreboard(this.board);
+		
+		this.player.sendMessage("You are " + this.name);
+		
 		
 		LeagueOfMinecraft.instance.addHandler(this);
 	}
 	
-	//Handle right click functions
+	private void initSpells() {
+		ItemStack q = new ItemStack(Material.EGG);
+		ItemStack w = new ItemStack(Material.EGG);
+		ItemStack e = new ItemStack(Material.EGG);
+		ItemStack r = new ItemStack(Material.EGG);
+		ItemStack d = new ItemStack(Material.EGG);
+		ItemStack f = new ItemStack(Material.EGG);
+		q = setName(q, this.skill1.name);
+		w = setName(w, this.skill2.name);
+		e = setName(e, this.skill3.name);
+		r = setName(r, this.skill4.name);
+		d = setName(d, this.summonerSkill1.name);
+		f = setName(f, this.summonerSkill2.name);
+		this.player.getInventory().setItem(0,q);
+		this.player.getInventory().setItem(1,w);
+		this.player.getInventory().setItem(2,e);
+		this.player.getInventory().setItem(3,r);
+		this.player.getInventory().setItem(4,d);
+		this.player.getInventory().setItem(5,f);
+	}
+	
+	//credit: drampelt, https://bukkit.org/threads/how-to-change-items-names.118126/
+	public ItemStack setName(ItemStack is, String name){
+        ItemMeta m = is.getItemMeta();
+        m.setDisplayName(name);
+        is.setItemMeta(m);
+        return is;
+    }
+
+	private Scoreboard createScoreBoard() 
+	{
+		ScoreboardManager manager = Bukkit.getScoreboardManager();
+		Scoreboard board = manager.getNewScoreboard();
+		//Team boardTeam = board.registerNewTeam( this.team.toString() );
+		Objective objective = board.registerNewObjective("Stats", "dummy");
+		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+		objective.setDisplayName(this.name);
+		Score health = objective.getScore("Health:");
+		health.setScore((int)this.health);
+		Score mana = objective.getScore("Mana:");
+		mana.setScore((int)this.mana);
+		Score skill1Score = objective.getScore(this.skill1.name);
+		Score skill2Score = objective.getScore(this.skill2.name);
+		Score skill3Score = objective.getScore(this.skill3.name);
+		Score skill4Score = objective.getScore(this.skill4.name);
+		Score summonerSkill1Score = objective.getScore(this.summonerSkill1.name);
+		Score summonerSkill2Score = objective.getScore(this.summonerSkill2.name);
+		skill1Score.setScore(this.skill1.getCooldown());
+		skill2Score.setScore(this.skill2.getCooldown());
+		skill3Score.setScore(this.skill3.getCooldown());
+		skill4Score.setScore(this.skill4.getCooldown());
+		summonerSkill1Score.setScore(this.summonerSkill1.getCooldown());
+		summonerSkill2Score.setScore(this.summonerSkill2.getCooldown());		
+		
+		return board;
+	}
+
+	/*//Handle right click functions
 	@EventHandler
 	public void handleClickOnEntity( PlayerInteractEntityEvent event )
 	{
 		event.setCancelled(true);
+		event.getPlayer().sendMessage("PIEE");
 		rightClick(event);
 	}
 	
@@ -62,10 +191,11 @@ public abstract class Champion implements Listener{
 	public void handleClickOnEntityAtEntity( PlayerInteractAtEntityEvent event )
 	{
 		event.setCancelled(true);
+		event.getPlayer().sendMessage("PIAEE");
 		rightClick(event);
-	}
+	}*/
 	
-	@EventHandler
+	@EventHandler//have to use eggs (or at least sticks cause double event, other items may work)
 	public void handleClickNotOnEntity( PlayerInteractEvent event )
 	{
 		event.setCancelled(true);
