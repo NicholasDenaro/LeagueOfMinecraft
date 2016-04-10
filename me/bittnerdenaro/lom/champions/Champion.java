@@ -1,5 +1,7 @@
 package me.bittnerdenaro.lom.champions;
 
+import java.util.HashMap;
+
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
 import me.bittnerdenaro.lom.skills.Skill;
 
@@ -24,37 +26,15 @@ import org.bukkit.scoreboard.Team;
 
 public abstract class Champion implements Listener{
 	
+	HashMap<String, Stat> statMap;
+	
 	//player info
 	public Player player;
 	public LeagueOfMinecraft.Team team;
 	public Scoreboard board;
 	
 	//champion info
-	public String name;
-
-	public double health;
-	public double healthRegen;
-	public double mana;
-	public double manaRegen;
-	public double range;
-	public double attackDamage;
-	public double armor;
-	public double magicResist;
-	public double moveSpeed;
-	public double attackSpeed;
-	
-	public double abilityPower;
-	public double armorPenetration;
-	public double magicPenetration;	
-	public double cooldownReduction;
-	public double critChance;
-	public double lifeSteal;
-	public double spellVamp;
-	public double tenacity;
-	
-	public int level;
-	public int experience;
-	
+	public String name;	
 	
 	//skills
 	public Skill skill1;
@@ -76,29 +56,37 @@ public abstract class Champion implements Listener{
 		
 		this.name = name;
 		
-		this.health = health;
-		this.healthRegen = healthRegen;
-		this.mana = mana;
-		this.manaRegen = manaRegen;
-		this.range = range;
-		this.attackDamage = attackDamage;
-		this.armor = armor;
-		this.magicResist = magicResist;
-		this.moveSpeed = moveSpeed;
-		this.attackSpeed = attackSpeed;
+		//init scoreboard
+		this.board = createScoreBoard();
+		Objective sideObjective = board.getObjective("Side");
+		Objective nameObjective = board.getObjective("Name");
 		
+		statMap = new HashMap<String, Stat>();
+		statMap.put("health", new Stat( health, nameObjective.getScore("Health:"), -1 ));
+		statMap.put("maxHealth", new Stat( health, null, 0));
+		statMap.put("healthRegen", new Stat( healthRegen, sideObjective.getScore("Health Regen:"), 0 ));
+		statMap.put("mana", new Stat( mana, sideObjective.getScore("Mana:"), -1 )) ;
+		statMap.put("maxMana", new Stat( mana, null, 0));
+		statMap.put("manaRegen", new Stat( manaRegen, nameObjective.getScore("Mana Regen:"), 0 ));
+		statMap.put("range", new Stat( range, sideObjective.getScore("Range:"), 0 )) ;
+		statMap.put("attackDamage", new Stat( attackDamage, sideObjective.getScore("Attack Damage:"), 7 ));
+		statMap.put("armor", new Stat( armor, sideObjective.getScore("Armor:"), 5 )) ;
+		statMap.put("magicResist", new Stat( magicResist, sideObjective.getScore("Magic Resist:"), 4 ));
+		statMap.put("moveSpeed", new Stat( moveSpeed, sideObjective.getScore("Move Speed:"), 3 )) ;
+		statMap.put("attackSpeed", new Stat( attackSpeed, sideObjective.getScore("Attack Speed:"), 2 ));
 		
-		this.abilityPower = 0;
-		this.armorPenetration = 0;
-		this.magicPenetration = 0;
-		this.cooldownReduction = 0;
-		this.critChance = 0;
-		this.spellVamp = 0;
-		this.lifeSteal = 0;
-		this.tenacity = 0;
-
-		this.level = 1;
-		this.experience = 0;
+		statMap.put("abilityPower", new Stat( (double) 0, sideObjective.getScore("Ability Power:"), 6 )) ;
+		statMap.put("armorPenetration", new Stat( (double) 0, sideObjective.getScore("Armor Penetration:"), 0 ));
+		statMap.put("magicPenetration", new Stat( (double) 0, sideObjective.getScore("Magic Penetration:"), 0 )) ;
+		statMap.put("cooldownReduction", new Stat( (double) 0, sideObjective.getScore("Cooldown Reduction:"), 1 ));
+		statMap.put("critChance", new Stat( (double) 0, sideObjective.getScore("Critical Chance:"), 0 )) ;
+		statMap.put("spellVamp", new Stat( (double) 0, sideObjective.getScore("Spell Vampirism:"), 0 ));
+		statMap.put("lifeSteal", new Stat( (double) 0, sideObjective.getScore("Life Steal:"), 0 )) ;
+		statMap.put("tenacity", new Stat( (double) 0, sideObjective.getScore("Tenacity:"), 0 ));
+		
+		statMap.put("level", new Stat( (double) 1, sideObjective.getScore("Level:"), 0 )) ;
+		statMap.put("experience", new Stat( (double) 0, sideObjective.getScore("Experience:"), 0 )) ;
+		statMap.put("gold", new Stat( (double) 0, sideObjective.getScore("Gold:"), 8 ));
 		
 		this.skill1 = skill1;
 		this.skill2 = skill2;
@@ -107,10 +95,30 @@ public abstract class Champion implements Listener{
 		this.summonerSkill1 = summonerSkill1;
 		this.summonerSkill2 = summonerSkill2;
 		
+		statMap.put("skill1", new Stat( this.skill1.getCooldown(), sideObjective.getScore(this.skill1.name + ":"), 14));
+		statMap.put("skill2", new Stat( this.skill2.getCooldown(), sideObjective.getScore(this.skill2.name + ":"), 13));
+		statMap.put("skill3", new Stat( this.skill3.getCooldown(), sideObjective.getScore(this.skill3.name + ":"), 12));
+		statMap.put("skill4", new Stat( this.skill4.getCooldown(), sideObjective.getScore(this.skill4.name + ":"), 11));
+		statMap.put("summonerSkill1", new Stat( this.summonerSkill1.getCooldown(), sideObjective.getScore(this.summonerSkill1.name + ":"), 10));
+		statMap.put("summonerSkill2", new Stat( this.summonerSkill2.getCooldown(), sideObjective.getScore(this.summonerSkill2.name + ":"), 9));
+		
+		for( Stat s: statMap.values())
+		{
+			if( s.order > 0 )
+			{
+				s.update(this.board, sideObjective);
+			}
+			else if( s.order < 0 )
+			{
+				s.update(this.board, nameObjective);
+			}
+		}
+		
+		this.player.setLevel(1);
+		
+		
 		initSpells();
 		
-		//init scoreboard
-		this.board = createScoreBoard();
 		
 		//set scoreboard
 		this.player.setScoreboard(this.board);
@@ -155,51 +163,24 @@ public abstract class Champion implements Listener{
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 		Scoreboard board = manager.getNewScoreboard();
 		//Team boardTeam = board.registerNewTeam( this.team.toString() );
-		Objective objective = board.registerNewObjective("Stats", "dummy");
-		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		objective.setDisplayName(this.name);
-		Score health = objective.getScore("Health:");
-		health.setScore((int)this.health);
-		Score mana = objective.getScore("Mana:");
-		mana.setScore((int)this.mana);
-		Score skill1Score = objective.getScore(this.skill1.name);
-		Score skill2Score = objective.getScore(this.skill2.name);
-		Score skill3Score = objective.getScore(this.skill3.name);
-		Score skill4Score = objective.getScore(this.skill4.name);
-		Score summonerSkill1Score = objective.getScore(this.summonerSkill1.name);
-		Score summonerSkill2Score = objective.getScore(this.summonerSkill2.name);
-		skill1Score.setScore(this.skill1.getCooldown());
-		skill2Score.setScore(this.skill2.getCooldown());
-		skill3Score.setScore(this.skill3.getCooldown());
-		skill4Score.setScore(this.skill4.getCooldown());
-		summonerSkill1Score.setScore(this.summonerSkill1.getCooldown());
-		summonerSkill2Score.setScore(this.summonerSkill2.getCooldown());		
+		Objective sideObjective = board.registerNewObjective("Side", "dummy");
+		sideObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+		sideObjective.setDisplayName(this.name);
+		
+		Objective nameObjective = board.registerNewObjective("Name", "dummy");
+		nameObjective.setDisplaySlot(DisplaySlot.BELOW_NAME);
+		nameObjective.setDisplayName("stuff");	
 		
 		return board;
 	}
-
-	/*//Handle right click functions
-	@EventHandler
-	public void handleClickOnEntity( PlayerInteractEntityEvent event )
-	{
-		event.setCancelled(true);
-		event.getPlayer().sendMessage("PIEE");
-		rightClick(event);
-	}
-	
-	@EventHandler
-	public void handleClickOnEntityAtEntity( PlayerInteractAtEntityEvent event )
-	{
-		event.setCancelled(true);
-		event.getPlayer().sendMessage("PIAEE");
-		rightClick(event);
-	}*/
 	
 	@EventHandler//have to use eggs (or at least sticks cause double event, other items may work)
 	public void handleClickNotOnEntity( PlayerInteractEvent event )
 	{
 		event.setCancelled(true);
-		rightClick(event);
+		if( event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK )
+			rightClick(event);
+			
 	}
 	
 	public void rightClick( PlayerEvent event )
@@ -213,21 +194,27 @@ public abstract class Champion implements Listener{
 			{
 				case 0:
 					this.skill1.use(event);
+					this.player.getInventory().setItem(0, this.player.getInventory().getItem(0));
 					break;
 				case 1:
 					this.skill2.use(event);
+					this.player.getInventory().setItem(1, this.player.getInventory().getItem(1));
 					break;
 				case 2:
 					this.skill3.use(event);
+					this.player.getInventory().setItem(2, this.player.getInventory().getItem(2));
 					break;
 				case 3:
 					this.skill4.use(event);
+					this.player.getInventory().setItem(3, this.player.getInventory().getItem(3));
 					break;
 				case 4:
 					this.summonerSkill1.use(event);
+					this.player.getInventory().setItem(4, this.player.getInventory().getItem(4));
 					break;
 				case 5:
 					this.summonerSkill2.use(event);
+					this.player.getInventory().setItem(5, this.player.getInventory().getItem(5));
 					break;
 				default:
 					event.getPlayer().sendMessage("Invalid slot used - no spell here boys");				
