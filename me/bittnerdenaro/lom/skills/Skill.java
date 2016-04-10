@@ -4,9 +4,9 @@ import org.bukkit.event.player.PlayerEvent;
 
 public abstract class Skill 
 {
-	private String name;
-	private int level;
-	private int maxLevel;
+	public String name;
+	public int level;
+	public int maxLevel;
 	
 	public Skill( String name, int maxLevel )
 	{

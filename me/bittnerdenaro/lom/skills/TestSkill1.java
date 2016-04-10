@@ -5,7 +5,7 @@ import org.bukkit.event.player.PlayerEvent;
 public class TestSkill1 extends Skill {
 
 	public TestSkill1() {
-		super("Test 1", 5);
+		super("Skill 1", 5);
 		// TODO Auto-generated constructor stub
 	}
 

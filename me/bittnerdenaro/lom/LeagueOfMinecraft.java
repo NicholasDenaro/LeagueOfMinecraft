@@ -16,6 +16,7 @@ public class LeagueOfMinecraft extends JavaPlugin
 {
 	public static LeagueOfMinecraft instance;
 	public static final int TICKS = 20;
+	public static enum Team{RED, BLUE};
 	
 	@Override
 	public void onEnable()
