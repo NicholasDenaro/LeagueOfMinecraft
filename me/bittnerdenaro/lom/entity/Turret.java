@@ -58,6 +58,7 @@ public class Turret implements Skillable, Healthable
 				if(turret.isDead())
 				{
 					cancel();
+					return;
 				}
 				LivingEntity target = turret.getTarget();
 				if(target != null)
@@ -117,6 +118,12 @@ public class Turret implements Skillable, Healthable
 	public void damage(double amount)
 	{
 		health -= amount;
+	}
+	
+	@Override
+	public boolean isDead()
+	{
+		return health <= 0;
 	}
 
 	@Override

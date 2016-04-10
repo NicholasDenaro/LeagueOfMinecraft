@@ -60,6 +60,12 @@ public abstract class Minion implements Skillable, Healthable
 			@Override
 			public void run()
 			{
+				if(isDead())
+				{
+					cancel();
+					me.remove();
+					return;
+				}
 				if(target != null)
 				{
 					if(timer-- == 0)
@@ -121,6 +127,12 @@ public abstract class Minion implements Skillable, Healthable
 	public void damage(double amount)
 	{
 		health -= amount;
+	}
+	
+	@Override
+	public boolean isDead()
+	{
+		return health <= 0;
 	}
 
 	@Override

@@ -209,7 +209,12 @@ public abstract class Champion implements Skillable, Listener, Healthable
 				}.runTaskTimer(LeagueOfMinecraft.instance,1,LeagueOfMinecraft.instance.TPS);
 			}
 		}
-		
+	}
+	
+	@Override
+	public boolean isDead()
+	{
+		return statMap.get("health").value <= 0;
 	}
 
 	@Override
@@ -340,7 +345,6 @@ public abstract class Champion implements Skillable, Listener, Healthable
 				if(target != null)
 				{
 					//targetted!
-					player.sendMessage("basic attacked!");
 					Vector projdir = target.getEyeLocation().clone().subtract(player.getEyeLocation()).toVector().normalize();
 					Projectile proj = (Projectile)LeagueOfMinecraft.instance.getWorld().spawnEntity(player.getEyeLocation().clone().add(projdir.multiply(2)),EntityType.ARROW);
 					new BDProjectile(this, proj, 0.3, target, new BasicAttack());

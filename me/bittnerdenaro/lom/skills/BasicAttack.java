@@ -18,8 +18,7 @@ public class BasicAttack extends Skill
 	@Override
 	public int getDamage()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return 100;
 	}
 
 	@Override
@@ -44,7 +43,7 @@ public class BasicAttack extends Skill
 	@Override
 	public void hit(Skillable player, Healthable entity)
 	{
-		
+		entity.damage(getDamage());
 	}
 	
 }
