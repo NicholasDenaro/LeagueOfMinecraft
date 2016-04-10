@@ -125,7 +125,7 @@ public abstract class Champion implements Listener{
 				s.update(this.board, nameObjective);
 			}*/
 		}
-		Score namescore = nameObjective.getScore( this.player.getName());
+		Score namescore = nameObjective.getScore( "Gambit5");
 		namescore.setScore( (int)statMap.get("health").value );
 		
 		this.player.sendMessage(""+ statMap.get("health").value);
