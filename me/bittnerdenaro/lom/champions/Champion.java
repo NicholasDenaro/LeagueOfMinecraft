@@ -69,7 +69,7 @@ public abstract class Champion implements Listener{
 		this.name = name;
 		
 		//init scoreboard
-		this.board = createScoreBoard();
+		this.board = createScoreBoard( health );
 		Objective sideObjective = board.getObjective("Side");
 		Objective nameObjective = board.getObjective("Name");
 		
@@ -125,8 +125,8 @@ public abstract class Champion implements Listener{
 				s.update(this.board, nameObjective);
 			}*/
 		}
-		Score namescore = nameObjective.getScore( statMap.get("health").value + "/ ");
-		namescore.setScore( (int)statMap.get("maxHealth").value );
+		Score namescore = nameObjective.getScore( this.player.getName());
+		namescore.setScore( (int)statMap.get("health").value );
 		
 		this.player.sendMessage(""+ statMap.get("health").value);
 		
@@ -174,7 +174,7 @@ public abstract class Champion implements Listener{
         return is;
     }
 
-	private Scoreboard createScoreBoard() 
+	private Scoreboard createScoreBoard( double maxHealth ) 
 	{
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 		Scoreboard board = manager.getNewScoreboard();
@@ -185,6 +185,7 @@ public abstract class Champion implements Listener{
 		
 		Objective nameObjective = board.registerNewObjective("Name", "dummy");
 		nameObjective.setDisplaySlot(DisplaySlot.BELOW_NAME);
+		nameObjective.setDisplayName("/ " + maxHealth);
 		
 		return board;
 	}
