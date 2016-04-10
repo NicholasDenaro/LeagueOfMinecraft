@@ -40,7 +40,7 @@ public class Turret implements Listener
 		
 		BukkitRunnable runnable = new BukkitRunnable()
 		{
-			final int repeat = LeagueOfMinecraft.TICKS;
+			final int repeat = LeagueOfMinecraft.TPS;
 			int timer = repeat;
 			
 			@Override

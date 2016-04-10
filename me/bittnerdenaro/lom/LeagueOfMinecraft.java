@@ -15,8 +15,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LeagueOfMinecraft extends JavaPlugin
 {
 	public static LeagueOfMinecraft instance;
-	public static final int TICKS = 20;
 	public static enum Team{RED, BLUE};
+	public static final int TPS = 20;
+	public CrowdControl cc;
 	
 	@Override
 	public void onEnable()
@@ -33,6 +34,8 @@ public class LeagueOfMinecraft extends JavaPlugin
 	{
 		this.getServer().getPluginManager().registerEvents(new GeneralPlayerEvents(), this);
 		this.getServer().getPluginManager().registerEvents(new Turret(), this);
+		cc = new CrowdControl();
+		this.getServer().getPluginManager().registerEvents(cc, this);
 
 	}
 	
@@ -70,6 +73,9 @@ public class LeagueOfMinecraft extends JavaPlugin
 		CommandEvents commander = new CommandEvents();
 		
 		getCommand("create-turret").setExecutor(commander);
+		getCommand("slow").setExecutor(commander);
+		getCommand("knockup").setExecutor(commander);
+		getCommand("knockback").setExecutor(commander);
 	}
 	
 	public void addHandler( Listener listener )

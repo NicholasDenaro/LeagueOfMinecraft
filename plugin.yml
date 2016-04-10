@@ -5,3 +5,12 @@ commands:
   create-turret:
     description: creates a turret
     usage: /create-turret
+  slow:
+    descript: causes the slow CC
+    usage: /slow <percent> <duration in ticks>
+  knockup:
+    descript: causes the knockup CC
+    usage: /knockup <distance>  
+  knockback:
+    descript: causes the knockback CC
+    usage: /knockback
