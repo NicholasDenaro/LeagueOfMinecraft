@@ -45,7 +45,7 @@ public class BDProjectile
 				{
 					cancel();
 					projectile.remove();
-					skill.hit(shooter, target);
+					skill.hit(shooter, LeagueOfMinecraft.instance.healthables.get(target));
 				}
 				else
 				{

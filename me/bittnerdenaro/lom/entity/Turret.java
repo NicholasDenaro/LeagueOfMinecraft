@@ -1,7 +1,5 @@
 package me.bittnerdenaro.lom.entity;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import me.bittnerdenaro.lom.BDProjectile;
@@ -16,26 +14,28 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowman;
-import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class Turret extends Skillable
+public class Turret implements Skillable, Healthable
 {
 	public static Turret instance;
 	public static final int TURRET_RADIUS = 20;
-	public HashMap<Entity, Team> turrets = new HashMap<Entity, Team>();
+	public double health;
+	public double maxHealth;
 	
 	private LivingEntity me;
-	private Team team;
+	public Team team;
 	
-	public Turret(LivingEntity entity, Team team)
+	public Turret(LivingEntity entity, Team team, int maxHealth)
 	{
 		super();
-		instance = this;
 		this.me = entity;
 		this.team = team;
-		turrets.put(me, team);
+		this.maxHealth = maxHealth;
+		this.health = maxHealth;
+		LeagueOfMinecraft.instance.turrets.put(entity, this);
+		LeagueOfMinecraft.instance.healthables.put(entity, this);
 	}
 	
 	public void createTurret(Location location, Team team)
@@ -45,7 +45,7 @@ public class Turret extends Skillable
 		turret.setAI(false);
 		turret.setInvulnerable(true);
 		
-		Turret thisTurret = new Turret(turret, team);
+		Turret thisTurret = new Turret(turret, team, 1500);
 		
 		BukkitRunnable runnable = new BukkitRunnable()
 		{
@@ -74,7 +74,7 @@ public class Turret extends Skillable
 						}
 						else
 						{
-							turret.setTarget(null);;
+							turret.setTarget(null);
 						}
 					}
 				}
@@ -111,5 +111,24 @@ public class Turret extends Skillable
 	private boolean canStillShoot(Snowman turret, LivingEntity entity)
 	{
 		return turret.getLocation().distance(entity.getLocation()) < TURRET_RADIUS;
+	}
+
+	@Override
+	public void damage(double amount)
+	{
+		health -= amount;
+	}
+
+	@Override
+	public double getHealth()
+	{
+		// TODO Auto-generated method stub
+		return health;
+	}
+
+	@Override
+	public void setHealth(double health)
+	{
+		this.health = health;
 	}
 }

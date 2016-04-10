@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.bittnerdenaro.lom.BDProjectile;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
+import me.bittnerdenaro.lom.entity.Healthable;
 import me.bittnerdenaro.lom.entity.Skillable;
 import me.bittnerdenaro.lom.skills.BasicAttack;
 import me.bittnerdenaro.lom.skills.Skill;
@@ -37,7 +38,8 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-public abstract class Champion extends Skillable implements Listener{
+public abstract class Champion implements Skillable, Listener, Healthable
+{
 	
 	public HashMap<String, Stat> statMap;
 	
@@ -143,6 +145,7 @@ public abstract class Champion extends Skillable implements Listener{
 		
 		LeagueOfMinecraft.instance.addHandler(this);
 		LeagueOfMinecraft.instance.playersChamp.put(this.player,this);
+		LeagueOfMinecraft.instance.healthables.put(this.player,this);
 	}
 	
 	private void initSpells() {
@@ -173,11 +176,56 @@ public abstract class Champion extends Skillable implements Listener{
         is.setItemMeta(m);
         return is;
     }
-	
-	public void damage(int ammount)
+
+
+	@Override
+	public void damage(double ammount)
 	{
+		boolean wasAtFull = statMap.get("health").value == statMap.get("maxHealth").value;
+		Stat health = statMap.get("health");
+		health.value -= ammount;
+		if(health.value <= 0)
+		{
+			//TODO: dead
+		}
+		else
+		{
+			if(wasAtFull)
+			{
+				new BukkitRunnable()
+				{
+					@Override
+					public void run()
+					{
+						Stat regen = statMap.get("healthRegen");
+						health.value += regen.value;
+						health.update(health.score.getScoreboard(),health.score.getObjective());
+						if(health.value >= statMap.get("maxHealth").value)
+						{
+							health.value = statMap.get("maxHealth").value;
+							cancel();
+						}
+					}
+				}.runTaskTimer(LeagueOfMinecraft.instance,1,LeagueOfMinecraft.instance.TPS);
+			}
+		}
 		
 	}
+
+	@Override
+	public double getHealth()
+	{
+		Stat health = statMap.get("health");
+		return health.value;
+	}
+
+	@Override
+	public void setHealth(double hp)
+	{
+		Stat health = statMap.get("health");
+		health.value = hp;
+	}
+	
 
 	private Scoreboard createScoreBoard( double maxHealth ) 
 	{

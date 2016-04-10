@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import me.bittnerdenaro.lom.champions.Champion;
+import me.bittnerdenaro.lom.entity.Healthable;
 import me.bittnerdenaro.lom.entity.Minion;
 import me.bittnerdenaro.lom.entity.Turret;
 
@@ -35,6 +36,8 @@ public class LeagueOfMinecraft extends JavaPlugin
 	public Map map;
 	public HashMap<Player, Champion> playersChamp;
 	public HashMap<LivingEntity, Minion> minions;
+	public HashMap<LivingEntity, Turret> turrets;
+	public HashMap<LivingEntity, Healthable> healthables;
 	public LinkedList<Integer[]> waves;
 	
 	@Override
@@ -52,6 +55,8 @@ public class LeagueOfMinecraft extends JavaPlugin
 		instance = this;
 		playersChamp = new HashMap<Player, Champion>();
 		minions = new HashMap<LivingEntity, Minion>();
+		turrets = new HashMap<LivingEntity, Turret>();
+		healthables = new HashMap<LivingEntity, Healthable>();
 	}
 	
 	private void loadHandlers()
@@ -84,13 +89,13 @@ public class LeagueOfMinecraft extends JavaPlugin
 			team2 = minions.get(other).team;
 		}
 		
-		if(Turret.instance.turrets.containsKey(entity))
+		if(turrets.containsKey(entity))
 		{
-			team1 = Turret.instance.turrets.get(entity);
+			team1 = turrets.get(entity).team;
 		}
-		if(Turret.instance.turrets.containsKey(other))
+		if(turrets.containsKey(other))
 		{
-			team2 = Turret.instance.turrets.get(other);
+			team2 = turrets.get(other).team;
 		}
 		
 		return team1 == team2;

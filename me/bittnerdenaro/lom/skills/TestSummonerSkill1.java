@@ -1,5 +1,6 @@
 package me.bittnerdenaro.lom.skills;
 
+import me.bittnerdenaro.lom.entity.Healthable;
 import me.bittnerdenaro.lom.entity.Skillable;
 
 import org.bukkit.entity.LivingEntity;
@@ -39,7 +40,7 @@ public class TestSummonerSkill1 extends Skill {
 	}
 
 	@Override
-	public void hit(Skillable player, LivingEntity entity)
+	public void hit(Skillable player, Healthable entity)
 	{
 	}
 

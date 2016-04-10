@@ -2,6 +2,7 @@ package me.bittnerdenaro.lom.skills;
 
 import me.bittnerdenaro.lom.BDSkillShot;
 import me.bittnerdenaro.lom.LeagueOfMinecraft;
+import me.bittnerdenaro.lom.entity.Healthable;
 import me.bittnerdenaro.lom.entity.Skillable;
 
 import org.bukkit.Location;
@@ -50,12 +51,9 @@ public class TestSkill1 extends Skill {
 	}
 
 	@Override
-	public void hit(Skillable player, LivingEntity entity)
+	public void hit(Skillable player, Healthable entity)
 	{
-		if(entity instanceof Player)
-		{
-			entity.sendMessage("hit by " + name);
-		}
+		
 	}
 
 }

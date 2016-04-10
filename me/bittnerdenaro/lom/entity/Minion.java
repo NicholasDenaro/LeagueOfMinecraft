@@ -19,18 +19,23 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public abstract class Minion extends Skillable
+public abstract class Minion implements Skillable, Healthable
 {
 	public LivingEntity me;
 	public Team team;
 	public LivingEntity target;
+	public double health;
+	public double maxHealth;
 	
-	public Minion(LivingEntity entity, Team t)
+	public Minion(LivingEntity entity, Team t, int maxHealth)
 	{
 		me = entity;
 		team = t;
 		target = null;
+		this.maxHealth = maxHealth;
+		health = maxHealth;
 		LeagueOfMinecraft.instance.minions.put(entity,this);
+		LeagueOfMinecraft.instance.healthables.put(entity,this);
 		ai(entity);
 	}
 	
@@ -81,7 +86,9 @@ public abstract class Minion extends Skillable
 					LivingEntity closest = null;
 					for(Entity entity : entities)
 					{
-						if(entity instanceof LivingEntity && !LeagueOfMinecraft.instance.sameTeam(me,entity))
+						if(entity instanceof LivingEntity 
+								&& LeagueOfMinecraft.instance.healthables.containsKey(entity)
+								&& !LeagueOfMinecraft.instance.sameTeam(me,entity))
 						{
 							double dist = me.getLocation().distance(entity.getLocation());
 							if(dist < distance)
@@ -110,6 +117,24 @@ public abstract class Minion extends Skillable
 		}.runTaskTimer(LeagueOfMinecraft.instance,1,1);
 	}
 	
+	@Override
+	public void damage(double amount)
+	{
+		health -= amount;
+	}
+
+	@Override
+	public double getHealth()
+	{
+		return health;
+	}
+
+	@Override
+	public void setHealth(double health)
+	{
+		this.health = health;
+	}
+	
 	public static void spawnMinion(int type)
 	{
 		switch(type)
@@ -130,20 +155,20 @@ public abstract class Minion extends Skillable
 	{
 		Slime slime = (Slime)LeagueOfMinecraft.instance.getWorld().spawnEntity(LeagueOfMinecraft.instance.map.redNexus,EntityType.SLIME);
 		slime.setSize(2);
-		new Minion(slime,Team.RED)
+		new Minion(slime,Team.RED, 455)
 		{
-
 			@Override
 			public int getRange()
 			{
-				return 5;
+				return 4;
 			}
 
 			@Override
 			public double getDamage()
 			{
-				return 10;
+				return 12;
 			}
+
 			
 		};
 	}
@@ -152,7 +177,7 @@ public abstract class Minion extends Skillable
 	{
 		MagmaCube magmaCube = (MagmaCube)LeagueOfMinecraft.instance.getWorld().spawnEntity(LeagueOfMinecraft.instance.map.redNexus,EntityType.MAGMA_CUBE);
 		magmaCube.setSize(2);
-		new Minion(magmaCube,Team.RED)
+		new Minion(magmaCube,Team.RED, 290)
 		{
 
 			@Override
@@ -164,7 +189,7 @@ public abstract class Minion extends Skillable
 			@Override
 			public double getDamage()
 			{
-				return 10;
+				return 23;
 			}
 			
 		};
@@ -176,9 +201,8 @@ public abstract class Minion extends Skillable
 		Zombie zombie = (Zombie)LeagueOfMinecraft.instance.getWorld().spawnEntity(LeagueOfMinecraft.instance.map.redNexus,EntityType.ZOMBIE);
 		zombie.setBaby(true);
 		//zombie.setPassenger(boomcart);
-		new Minion(zombie,Team.RED)
+		new Minion(zombie,Team.RED, 830)
 		{
-
 			@Override
 			public int getRange()
 			{
@@ -188,9 +212,8 @@ public abstract class Minion extends Skillable
 			@Override
 			public double getDamage()
 			{
-				return 20;
+				return 41;
 			}
-			
 		};
 	}
 	

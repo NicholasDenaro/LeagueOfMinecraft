@@ -63,7 +63,9 @@ public class BDSkillShot
 				double distance = 10;
 				for(Entity ent : ents)
 				{
-					if(ent instanceof LivingEntity && ent != shooter)
+					if(ent instanceof LivingEntity 
+							&& LeagueOfMinecraft.instance.healthables.containsKey(ent) 
+							&& ent != shooter)
 					{
 						double dist = ent.getLocation().distance(current);
 						if(dist < distance)
@@ -79,7 +81,7 @@ public class BDSkillShot
 					{
 						cancel();
 						projectile.remove();
-						skill.hit(shooter, closest);
+						skill.hit(shooter, LeagueOfMinecraft.instance.healthables.get(closest));
 					}
 				}
 				else
